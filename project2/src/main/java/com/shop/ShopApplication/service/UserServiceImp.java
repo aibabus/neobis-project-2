@@ -6,6 +6,7 @@ import com.shop.ShopApplication.user.Product;
 import com.shop.ShopApplication.user.User;
 import com.shop.ShopApplication.user.VerificationCode;
 import io.jsonwebtoken.io.IOException;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -68,54 +69,71 @@ public class UserServiceImp implements UserService{
 
         return false;
     }
-    @Override
-    public User updateUser(User user,
-                           MultipartFile avatar,
-                           String firstName,
-                           String lastName,
-                           String email,
-                           String phoneNumber,
-                           LocalDate birthDate) {
+//    @Override
+//    public User updateUser(User user,
+//                           MultipartFile avatar,
+//                           String firstName,
+//                           String lastName,
+//                           String email,
+//                           String phoneNumber,
+//                           LocalDate birthDate) {
+//
+//        User existingUser = userRepository.findById(user.getUser_id()).orElse(null);
+//
+//        if (existingUser == null) {
+//            return null;
+//        }
+//
+//        if (!existingUser.getEmail().equals(email)) {
+//            return null;
+//        }
+//
+//        // Update user information if provided
+//        if (avatar != null) {
+//            String fileName = StringUtils.cleanPath(avatar.getOriginalFilename());
+//
+//            if (fileName.contains("..")) {
+//                System.out.println("Not a valid file");
+//            }
+//
+//            try {
+//                existingUser.setAvatar(Base64.getEncoder().encodeToString(avatar.getBytes()));
+//            } catch (IOException | java.io.IOException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//        if (firstName != null) {
+//            existingUser.setFirstName(firstName);
+//        }
+//        if (lastName != null) {
+//            existingUser.setLastName(lastName);
+//        }
+//        if (email != null) {
+//            existingUser.setEmail(email);
+//        }
+//        if (phoneNumber != null) {
+//            existingUser.setPhoneNumber(phoneNumber);
+//        }
+//        if (birthDate != null) {
+//            existingUser.setBirthDate(birthDate);
+//        }
+//
+//        return userRepository.save(existingUser);
+//    }
 
-        User existingUser = userRepository.findById(user.getUser_id()).orElse(null);
+    @Override
+    public User updateUser(int userId, User updatedUser) {
+        System.out.println("Entering updateUser method");
+
+        User existingUser = userRepository.findById(userId).orElse(null);
+
 
         if (existingUser == null) {
             return null;
+
         }
 
-        if (!existingUser.getEmail().equals(email)) {
-            return null;
-        }
-
-        // Update user information if provided
-        if (avatar != null) {
-            String fileName = StringUtils.cleanPath(avatar.getOriginalFilename());
-
-            if (fileName.contains("..")) {
-                System.out.println("Not a valid file");
-            }
-
-            try {
-                existingUser.setAvatar(Base64.getEncoder().encodeToString(avatar.getBytes()));
-            } catch (IOException | java.io.IOException e) {
-                e.printStackTrace();
-            }
-        }
-        if (firstName != null) {
-            existingUser.setFirstName(firstName);
-        }
-        if (lastName != null) {
-            existingUser.setLastName(lastName);
-        }
-        if (email != null) {
-            existingUser.setEmail(email);
-        }
-        if (phoneNumber != null) {
-            existingUser.setPhoneNumber(phoneNumber);
-        }
-        if (birthDate != null) {
-            existingUser.setBirthDate(birthDate);
-        }
+        BeanUtils.copyProperties(updatedUser, existingUser, "user_id", "email","role","login","password","verified","enabled","phone_number");
 
         return userRepository.save(existingUser);
     }
@@ -190,6 +208,15 @@ public class UserServiceImp implements UserService{
     public boolean doesUserExistByLogin(String login) {
         Optional<User> userOptional = userRepository.findByLogin(login);
         return userOptional.isPresent();
+    }
+
+    @Override
+    public boolean findByPhoneNumberAndVerified(String newPhoneNumber) {
+        User user = userRepository.findByPhoneNumber(newPhoneNumber);
+        if(user.getVerified() == true){
+            return true;
+        }
+        return false;
     }
 
 }

@@ -32,7 +32,7 @@ public class VerificationCode {
         private LocalDateTime phoneConfirmedAt;
 
         @ManyToOne
-        @JoinColumn(name = "user_id") // Foreign key to User entity
+        @JoinColumn(name = "user_id")
         private User user;
 
         public LocalDateTime getPhoneConfirmedAt() {

@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Random;
 
@@ -27,7 +28,8 @@ public class SmsService {
 
     public void sendVerificationCode(String phoneNumber) {
         String verificationCode = generateVerificationCode();
-        LocalDateTime expirationTime = LocalDateTime.now().plusMinutes(5);
+        LocalDateTime currentTime = LocalDateTime.now();
+        LocalDateTime expirationTime = currentTime.plusMinutes(5);
 
 
         User user = userRepository.findByPhoneNumber(phoneNumber);
@@ -36,6 +38,7 @@ public class SmsService {
             Verificationcode.setCode(verificationCode);
             Verificationcode.setPhoneNumber(phoneNumber);
             Verificationcode.setUser(user);
+            Verificationcode.setExpirationTime(expirationTime);
             verificationCodeRepository.save(Verificationcode);
         }
 

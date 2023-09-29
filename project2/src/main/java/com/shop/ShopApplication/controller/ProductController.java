@@ -5,9 +5,11 @@ import com.shop.ShopApplication.service.ProductService;
 import com.shop.ShopApplication.user.Product;
 import com.shop.ShopApplication.user.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 @RestController
@@ -18,8 +20,10 @@ public class ProductController {
     private final ProductRepository productRepository;
 
     @PostMapping("/saveProduct")
-    public Product saveProduct(@RequestBody MultipartFile image, String productName, String shortDescription, String fullDescription, int price){
-        return productService.saveProduct(image,productName,shortDescription,fullDescription,price);
+    @Transactional
+    public ResponseEntity<String> saveProduct(@RequestBody MultipartFile image, String productName, String shortDescription, String fullDescription, int price){
+        productService.saveProduct(image,productName,shortDescription,fullDescription,price);
+        return ResponseEntity.ok("Product saved successfully.");
     }
 
     @PutMapping("/updateProduct/{productId}")

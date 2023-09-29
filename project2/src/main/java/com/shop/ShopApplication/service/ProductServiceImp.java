@@ -9,6 +9,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -25,11 +26,14 @@ public class ProductServiceImp implements ProductService {
     private UserRepository userRepository;
 
     @Override
+    @Transactional
     public Product saveProduct(MultipartFile image, String productName, String shortDescription, String fullDescription, int price) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
 
         User user = (User) authentication.getPrincipal();
+
+
 
         Product product = new Product();
         String fileName = StringUtils.cleanPath(image.getOriginalFilename());
@@ -48,7 +52,6 @@ public class ProductServiceImp implements ProductService {
         product.setFullDescription(fullDescription);
         product.setProductName(productName);
         product.setPrice(price);
-
         product.setUser(user);
 
 
