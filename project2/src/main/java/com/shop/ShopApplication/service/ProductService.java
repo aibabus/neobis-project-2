@@ -24,4 +24,5 @@ public interface ProductService {
     public List<Product> findAllProducts();
     public Product findSingleProduct(int id);
 
+    public Product getProductById(int id);
 }

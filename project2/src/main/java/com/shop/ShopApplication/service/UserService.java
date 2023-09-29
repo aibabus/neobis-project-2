@@ -2,6 +2,7 @@ package com.shop.ShopApplication.service;
 
 
 
+import com.shop.ShopApplication.user.Product;
 import com.shop.ShopApplication.user.User;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -21,6 +22,8 @@ public interface UserService {
                      String email,
                      String phoneNumber,
                      LocalDate birthDate);
+    public User getUserById(int userId);
+    public User addOrRemoveFavoriteProduct(int userId, int productId);
     public boolean doesUserExistByEmail(String email);
     public boolean doesUserExistByLogin(String login);
 

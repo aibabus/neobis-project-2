@@ -108,6 +108,10 @@ public class ProductServiceImp implements ProductService {
         return productRepository.save(existingProduct);
     }
 
+
+    public Product getProductById(int productId) {
+        return productRepository.findById(productId).orElse(null);
+    }
     @Override
     public List<Product> findAllProducts() {
         return productRepository.findAll();

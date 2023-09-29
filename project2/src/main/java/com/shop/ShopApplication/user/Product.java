@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @Builder
@@ -33,7 +35,8 @@ public class Product {
     )
     private User user;
 
-
+    @ManyToMany(mappedBy = "favoriteProducts")
+    private Set<User> favoriteByUsers = new HashSet<>();
 
 
 }

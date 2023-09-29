@@ -2,6 +2,7 @@ package com.shop.ShopApplication.controller;
 import com.shop.ShopApplication.service.UserService;
 import com.shop.ShopApplication.service.smsServices.smsSender.SmsRequest;
 import com.shop.ShopApplication.service.smsServices.smsSender.SmsService;
+import com.shop.ShopApplication.user.Product;
 import com.shop.ShopApplication.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -13,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/user")
@@ -63,6 +65,33 @@ public class UserController {
         if (updatedUser == null) {
 
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+
+        return ResponseEntity.ok(updatedUser);
+    }
+
+    @GetMapping("/favorite-products/{userId}")
+    public ResponseEntity<Set<Product>> getFavoriteProducts(@PathVariable int userId) {
+        User user = userService.getUserById(userId);
+
+        if (user == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Set<Product> favoriteProducts = user.getFavoriteProducts();
+
+        return ResponseEntity.ok(favoriteProducts);
+    }
+
+    @PutMapping("/{userId}/favorite-products/{productId}")
+    public ResponseEntity<User> addOrRemoveFavoriteProduct(
+            @PathVariable int userId,
+            @PathVariable int productId
+    ) {
+        User updatedUser = userService.addOrRemoveFavoriteProduct(userId, productId);
+
+        if (updatedUser == null) {
+            return ResponseEntity.notFound().build();
         }
 
         return ResponseEntity.ok(updatedUser);

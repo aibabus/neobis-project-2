@@ -1,5 +1,7 @@
 package com.shop.ShopApplication.service;
+import com.shop.ShopApplication.repo.ProductRepository;
 import com.shop.ShopApplication.repo.UserRepository;
+import com.shop.ShopApplication.user.Product;
 import com.shop.ShopApplication.user.User;
 import io.jsonwebtoken.io.IOException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +19,10 @@ public class UserServiceImp implements UserService{
 
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private ProductService productService;
+    @Autowired
+    private ProductRepository productRepository;
 
     @Override
     public List<User> getUser() {
@@ -91,10 +97,38 @@ public class UserServiceImp implements UserService{
             existingUser.setBirthDate(birthDate);
         }
 
-        // Save the updated user back to the database
         return userRepository.save(existingUser);
     }
 
+    @Override
+    public User getUserById(int userId) {
+        return userRepository.findById(userId).orElse(null);
+    }
+
+    @Override
+    public User addOrRemoveFavoriteProduct(int userId, int productId) {
+        User user = userRepository.findById(userId).orElse(null);
+
+        if (user == null) {
+
+            return null;
+        }
+
+        Product product = productService.getProductById(productId);
+
+        if (product != null) {
+            if (user.getFavoriteProducts().contains(product)) {
+                user.getFavoriteProducts().remove(product);
+            } else {
+                user.getFavoriteProducts().add(product);
+            }
+
+            return userRepository.save(user);
+        } else {
+
+            return null;
+        }
+    }
 
     @Override
     public boolean doesUserExistByEmail(String email) {
