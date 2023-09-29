@@ -1,5 +1,6 @@
 package com.shop.ShopApplication.controller;
 
+import com.shop.ShopApplication.repo.ProductRepository;
 import com.shop.ShopApplication.service.ProductService;
 import com.shop.ShopApplication.user.Product;
 import com.shop.ShopApplication.user.User;
@@ -14,6 +15,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ProductController {
     private final ProductService productService;
+    private final ProductRepository productRepository;
 
     @PostMapping("/saveProduct")
     public Product saveProduct(@RequestBody MultipartFile image, String productName, String shortDescription, String fullDescription, int price){
@@ -30,6 +32,11 @@ public class ProductController {
             @RequestParam(required = false) Integer price
     ) {
         return productService.updateProduct(product_id, image, productName, shortDescription, fullDescription, price);
+    }
+
+    @DeleteMapping("/deleteProduct/{id}")
+    public void deleteProduct(@RequestParam int id){
+        productRepository.deleteById(id);
     }
 
 }
