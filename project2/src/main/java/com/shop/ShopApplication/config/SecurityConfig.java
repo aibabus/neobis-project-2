@@ -28,7 +28,7 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults())
                 .authorizeRequests(authorizeRequests ->
                         authorizeRequests
-                                .antMatchers("/api/admin/**")
+                                .antMatchers("/api/user/**")
                                 .hasAuthority("USER")
                                 .antMatchers("/api/product/**")
                                 .hasAuthority("USER")
