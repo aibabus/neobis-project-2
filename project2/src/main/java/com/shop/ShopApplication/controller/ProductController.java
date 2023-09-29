@@ -38,5 +38,13 @@ public class ProductController {
     public void deleteProduct(@RequestParam int id){
         productRepository.deleteById(id);
     }
+    @GetMapping("/findAllProducts")
+    public List<Product> allProducts(){
+        return productService.findAllProducts();
+    }
+    @GetMapping("/findSingleProduct")
+    public Product findSingleUser(@PathVariable int id){
+        return productService.findSingleProduct(id);
+    }
 
 }

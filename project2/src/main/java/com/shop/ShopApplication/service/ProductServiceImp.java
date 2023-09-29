@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.Base64;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -107,4 +108,18 @@ public class ProductServiceImp implements ProductService {
         return productRepository.save(existingProduct);
     }
 
+    @Override
+    public List<Product> findAllProducts() {
+        return productRepository.findAll();
     }
+
+    @Override
+    public Product findSingleProduct(int id) {
+        Optional<Product> product = productRepository.findById(id);
+        if (product.isPresent()){
+            return product.get();
+        }
+        throw new RuntimeException("Product is not find " + id);
+    }
+
+}
