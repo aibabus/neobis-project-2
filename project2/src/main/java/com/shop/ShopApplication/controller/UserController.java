@@ -1,4 +1,5 @@
 package com.shop.ShopApplication.controller;
+import com.shop.ShopApplication.repo.UserRepository;
 import com.shop.ShopApplication.service.UserService;
 import com.shop.ShopApplication.service.smsServices.smsSender.SmsRequest;
 import com.shop.ShopApplication.service.smsServices.smsSender.SmsService;
@@ -21,8 +22,9 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class UserController {
 
-    public final UserService userService;
+    private final UserService userService;
     private final SmsService smsService;
+//    private final UserRepository userRepository;
 
     @GetMapping("/findUsers")
     public List<User> findAllUsers(){
@@ -95,6 +97,40 @@ public class UserController {
         }
 
         return ResponseEntity.ok(updatedUser);
+    }
+
+    @PutMapping("/update-phone-number/{userId}")
+    public ResponseEntity<String> updatePhoneNumber(
+            @PathVariable int userId,
+            @RequestParam String newPhoneNumber
+    ) {
+        User user = userService.getSingleUser(userId);
+
+        userService.updatePhoneNumber(user.getUser_id(), newPhoneNumber);
+
+        return ResponseEntity.ok("Phone number was updated");
+    }
+
+
+    @PostMapping("/send-verification-code")
+    public ResponseEntity<String> sendVerificationCode(@RequestParam String phoneNumber) {
+        smsService.sendVerificationCode(phoneNumber);
+        return ResponseEntity.ok("Verification code sent successfully.");
+    }
+
+
+    @PostMapping("/verify-phone-number")
+    public ResponseEntity<String> verifyPhoneNumber(
+            @RequestParam String phoneNumber,
+            @RequestParam String code
+    ) {
+        boolean verificationResult = userService.verifyPhoneNumber(phoneNumber, code);
+
+        if (verificationResult) {
+            return ResponseEntity.ok("Phone number verified successfully.");
+        } else {
+            return ResponseEntity.badRequest().body("Phone number verification failed.");
+        }
     }
 
 }

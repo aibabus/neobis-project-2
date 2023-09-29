@@ -1,8 +1,10 @@
 package com.shop.ShopApplication.service;
 import com.shop.ShopApplication.repo.ProductRepository;
 import com.shop.ShopApplication.repo.UserRepository;
+import com.shop.ShopApplication.repo.VerificationCodeRepository;
 import com.shop.ShopApplication.user.Product;
 import com.shop.ShopApplication.user.User;
+import com.shop.ShopApplication.user.VerificationCode;
 import io.jsonwebtoken.io.IOException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -10,6 +12,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
@@ -23,6 +26,8 @@ public class UserServiceImp implements UserService{
     private ProductService productService;
     @Autowired
     private ProductRepository productRepository;
+    @Autowired
+    private VerificationCodeRepository verificationCodeRepository;
 
     @Override
     public List<User> getUser() {
@@ -47,6 +52,21 @@ public class UserServiceImp implements UserService{
     public void deleteUser(int id) {
 
         userRepository.deleteById(id);
+    }
+
+    @Override
+    public boolean updatePhoneNumber(int userId, String newPhoneNumber) {
+        Optional<User> optionalUser = userRepository.findById(userId);
+
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            user.setPhoneNumber(newPhoneNumber);
+            user.setVerified(false);
+            userRepository.save(user);
+            return true;
+        }
+
+        return false;
     }
     @Override
     public User updateUser(User user,
@@ -128,6 +148,36 @@ public class UserServiceImp implements UserService{
 
             return null;
         }
+    }
+
+    @Override
+    public boolean verifyPhoneNumber(String phoneNumber, String code) {
+        User user = userRepository.findByPhoneNumber(phoneNumber);
+
+        if (user == null) {
+            return false;
+        }
+
+        VerificationCode verificationCode = verificationCodeRepository.findByPhoneNumberAndUser(phoneNumber, user);
+
+        if (verificationCode == null || !verificationCode.getCode().equals(code)) {
+            return false;
+        }
+
+        LocalDateTime now = LocalDateTime.now();
+        if (now.isAfter(verificationCode.getExpirationTime())) {
+            return false;
+        }
+
+        verificationCode.setPhoneConfirmedAt(now);
+
+        user.setVerified(true);
+
+        userRepository.save(user);
+
+        verificationCodeRepository.delete(verificationCode);
+
+        return true;
     }
 
     @Override

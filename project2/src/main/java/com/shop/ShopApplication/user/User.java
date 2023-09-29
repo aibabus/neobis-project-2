@@ -29,6 +29,7 @@ public class User implements UserDetails {
     private String email;
     private String password;
     private Boolean enabled = false;
+    @Column(nullable = false)
     private Boolean verified = false;
     private String phoneNumber;
     private LocalDate birthDate;
@@ -46,6 +47,9 @@ public class User implements UserDetails {
             inverseJoinColumns = @JoinColumn(name = "product_id")
     )
     private Set<Product> favoriteProducts = new HashSet<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<VerificationCode> verificationCodes;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

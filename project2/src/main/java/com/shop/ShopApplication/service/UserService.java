@@ -15,6 +15,7 @@ public interface UserService {
     User saveUser (User user);
     User getSingleUser (int id);
     void deleteUser (int id);
+    public boolean updatePhoneNumber(int userId, String newPhoneNumber);
     User updateUser (User user,
                      MultipartFile avatar,
                      String firstName,
@@ -23,6 +24,7 @@ public interface UserService {
                      String phoneNumber,
                      LocalDate birthDate);
     public User getUserById(int userId);
+    public boolean verifyPhoneNumber(String phoneNumber, String code);
     public User addOrRemoveFavoriteProduct(int userId, int productId);
     public boolean doesUserExistByEmail(String email);
     public boolean doesUserExistByLogin(String login);
