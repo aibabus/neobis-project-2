@@ -173,17 +173,20 @@ public class UserServiceImp implements UserService{
         User user = userRepository.findByPhoneNumber(phoneNumber);
 
         if (user == null) {
+            System.out.println("user is null");
             return false;
         }
 
         VerificationCode verificationCode = verificationCodeRepository.findByPhoneNumberAndUser(phoneNumber, user);
 
         if (verificationCode == null || !verificationCode.getCode().equals(code)) {
+            System.out.println("Code is not valid !");
             return false;
         }
 
         LocalDateTime now = LocalDateTime.now();
         if (now.isAfter(verificationCode.getExpirationTime())) {
+            System.out.println("Code is already expired");
             return false;
         }
 
@@ -213,10 +216,14 @@ public class UserServiceImp implements UserService{
     @Override
     public boolean findByPhoneNumberAndVerified(String newPhoneNumber) {
         User user = userRepository.findByPhoneNumber(newPhoneNumber);
+
+        if(user == null){
+            return false;
+        }
+
         if(user.getVerified() == true){
             return true;
         }
         return false;
     }
-
 }
