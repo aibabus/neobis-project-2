@@ -17,7 +17,7 @@ public class CorsConfig {
                         .allowedMethods("*")
                         .allowedHeaders("*")
                         .exposedHeaders("*")
-                        .allowCredentials(false)
+                        .allowCredentials(true)
                         .maxAge(-1);   //Enable cors for every endpoint
             }
         };
