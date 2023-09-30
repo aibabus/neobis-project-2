@@ -5,6 +5,7 @@ import com.shop.ShopApplication.service.ProductService;
 import com.shop.ShopApplication.user.Product;
 import com.shop.ShopApplication.user.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -27,15 +28,25 @@ public class ProductController {
     }
 
     @PutMapping("/updateProduct/{productId}")
-    public Product updateProduct(
+    public ResponseEntity<Product> updateProduct(
             @PathVariable int product_id,
-            @RequestParam(required = false) MultipartFile image,
-            @RequestParam(required = false) String productName,
-            @RequestParam(required = false) String shortDescription,
-            @RequestParam(required = false) String fullDescription,
-            @RequestParam(required = false) Integer price
+            @RequestBody Product updatedProduct
     ) {
-        return productService.updateProduct(product_id, image, productName, shortDescription, fullDescription, price);
+        Product product = productService.getProductById(product_id);
+
+        if (product == null) {
+            System.out.println("product not found");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+
+        Product updatedProductData = productService.updateProduct(product_id, updatedProduct);
+
+        if (updatedProductData == null) {
+            System.out.println("There is no data");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+
+        return ResponseEntity.ok(updatedProductData);
     }
 
     @DeleteMapping("/deleteProduct/{id}")
@@ -46,6 +57,7 @@ public class ProductController {
     public List<Product> allProducts(){
         return productService.findAllProducts();
     }
+
     @GetMapping("/findSingleProduct")
     public Product findSingleUser(@PathVariable int id){
         return productService.findSingleProduct(id);

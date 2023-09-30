@@ -12,16 +12,11 @@ public interface ProductService {
                         String shortDescription,
                         String fullDescription,
                         int price);
-    public Product updateProduct(
-            int product_id,
-            MultipartFile image,
-            String productName,
-            String shortDescription,
-            String fullDescription,
-            Integer price
-    );
+    public Product updateProduct(int productId, Product updatedProduct);
+
 
     public List<Product> findAllProducts();
+//    public List<Product> findAllUserProducts(int userId);
     public Product findSingleProduct(int id);
 
     public Product getProductById(int id);

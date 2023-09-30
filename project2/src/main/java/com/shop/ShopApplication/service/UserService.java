@@ -30,5 +30,7 @@ public interface UserService {
     public boolean doesUserExistByEmail(String email);
     public boolean doesUserExistByLogin(String login);
 
+    List<Product> findAllUserProducts(User user);
+
     public boolean findByPhoneNumberAndVerified(String newPhoneNumber);
 }

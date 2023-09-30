@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 public class VerificationCode {
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
-        private Long id;
+        private int id;
 
         @Column(nullable = false)
         private String phoneNumber;

@@ -69,57 +69,7 @@ public class UserServiceImp implements UserService{
 
         return false;
     }
-//    @Override
-//    public User updateUser(User user,
-//                           MultipartFile avatar,
-//                           String firstName,
-//                           String lastName,
-//                           String email,
-//                           String phoneNumber,
-//                           LocalDate birthDate) {
-//
-//        User existingUser = userRepository.findById(user.getUser_id()).orElse(null);
-//
-//        if (existingUser == null) {
-//            return null;
-//        }
-//
-//        if (!existingUser.getEmail().equals(email)) {
-//            return null;
-//        }
-//
-//        // Update user information if provided
-//        if (avatar != null) {
-//            String fileName = StringUtils.cleanPath(avatar.getOriginalFilename());
-//
-//            if (fileName.contains("..")) {
-//                System.out.println("Not a valid file");
-//            }
-//
-//            try {
-//                existingUser.setAvatar(Base64.getEncoder().encodeToString(avatar.getBytes()));
-//            } catch (IOException | java.io.IOException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//        if (firstName != null) {
-//            existingUser.setFirstName(firstName);
-//        }
-//        if (lastName != null) {
-//            existingUser.setLastName(lastName);
-//        }
-//        if (email != null) {
-//            existingUser.setEmail(email);
-//        }
-//        if (phoneNumber != null) {
-//            existingUser.setPhoneNumber(phoneNumber);
-//        }
-//        if (birthDate != null) {
-//            existingUser.setBirthDate(birthDate);
-//        }
-//
-//        return userRepository.save(existingUser);
-//    }
+
 
     @Override
     public User updateUser(int userId, User updatedUser) {
@@ -201,6 +151,7 @@ public class UserServiceImp implements UserService{
         return true;
     }
 
+
     @Override
     public boolean doesUserExistByEmail(String email) {
         Optional<User> userOptional = userRepository.findByEmail(email);
@@ -211,6 +162,11 @@ public class UserServiceImp implements UserService{
     public boolean doesUserExistByLogin(String login) {
         Optional<User> userOptional = userRepository.findByLogin(login);
         return userOptional.isPresent();
+    }
+
+    @Override
+    public List<Product> findAllUserProducts(User user) {
+        return productRepository.findAllByUser(user);
     }
 
     @Override

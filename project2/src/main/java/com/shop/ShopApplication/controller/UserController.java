@@ -40,6 +40,7 @@ public class UserController {
     }
 
 
+
     @PutMapping("/updateUser/{userId}")
     public ResponseEntity<User> updateUser(
             @PathVariable int userId,
@@ -61,6 +62,19 @@ public class UserController {
         }
 
         return ResponseEntity.ok(updatedUserData);
+    }
+
+    @GetMapping("/userProducts/{userId}")
+    public ResponseEntity<List<Product>> getUserProducts(@PathVariable int userId) {
+        User user = userService.getUserById(userId);
+
+        if (user != null) {
+            List<Product> userProducts = userService.findAllUserProducts(user);
+            System.out.println(userProducts);
+            return ResponseEntity.ok(userProducts);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
 
