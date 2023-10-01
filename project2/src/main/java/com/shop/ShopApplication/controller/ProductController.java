@@ -24,7 +24,7 @@ public class ProductController {
     @Transactional
     public ResponseEntity<String> saveProduct(@RequestBody MultipartFile image, String productName, String shortDescription, String fullDescription, int price){
         productService.saveProduct(image,productName,shortDescription,fullDescription,price);
-        return ResponseEntity.ok("Product saved successfully.");
+        return ResponseEntity.ok("ProductDto saved successfully.");
     }
 
     @PutMapping("/updateProduct/{productId}")

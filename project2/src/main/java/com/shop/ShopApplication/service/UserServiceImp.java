@@ -98,24 +98,21 @@ public class UserServiceImp implements UserService{
         User user = userRepository.findById(userId).orElse(null);
 
         if (user == null) {
-
             return null;
         }
 
         Product product = productService.getProductById(productId);
 
-        if (product != null) {
-            if (user.getFavoriteProducts().contains(product)) {
-                user.getFavoriteProducts().remove(product);
-            } else {
-                user.getFavoriteProducts().add(product);
-            }
-
-            return userRepository.save(user);
-        } else {
-
+        if(product == null)
             return null;
+
+
+        if (user.getFavoriteProducts().contains(product)) {
+            user.getFavoriteProducts().remove(product);
+        } else {
+            user.getFavoriteProducts().add(product);
         }
+        return userRepository.save(user);
     }
 
     @Override
@@ -173,13 +170,9 @@ public class UserServiceImp implements UserService{
     public boolean findByPhoneNumberAndVerified(String newPhoneNumber) {
         User user = userRepository.findByPhoneNumber(newPhoneNumber);
 
-        if(user == null){
+        if(user == null)
             return false;
-        }
 
-        if(user.getVerified() == true){
-            return true;
-        }
-        return false;
+        return user.getVerified();
     }
 }

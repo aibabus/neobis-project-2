@@ -146,9 +146,9 @@ public class UserController {
             @RequestParam String phoneNumber,
             @RequestParam String code
     ) {
-        boolean verificationResult = userService.verifyPhoneNumber(phoneNumber, code);
+        boolean isVerified = userService.verifyPhoneNumber(phoneNumber, code);
 
-        if (verificationResult) {
+        if (isVerified) {
             return ResponseEntity.ok("Phone number verified successfully.");
         } else {
             return ResponseEntity.badRequest().body("Phone number verification failed.");

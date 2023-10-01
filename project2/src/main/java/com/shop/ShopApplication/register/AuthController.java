@@ -26,8 +26,8 @@ public class AuthController {
     }
 
     @GetMapping("/credentialsCheck")
-    public boolean check(@RequestBody String login, String email){
-        return authService.checkAvailability(login, email);
+    public boolean check(@RequestBody CheckRequest request){
+        return authService.checkAvailability(request);
     }
 
 }

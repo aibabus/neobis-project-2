@@ -9,8 +9,8 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface ProductRepository extends JpaRepository<Product, Integer> {
-//    @Query("SELECT p FROM Product p WHERE p.user.user_id = :userId")
-//    List<Product> findAllByUserId(int userId);
-//@Query("SELECT p FROM Product p WHERE p.user = :user")@Param("user")
+//    @Query("SELECT p FROM ProductDto p WHERE p.user.user_id = :userId")
+//    List<ProductDto> findAllByUserId(int userId);
+//@Query("SELECT p FROM ProductDto p WHERE p.user = :user")@Param("user")
 List<Product> findAllByUser( User user);
 }

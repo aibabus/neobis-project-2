@@ -28,32 +28,31 @@ public class AuthService {
 
     public AuthResponse register(RegisterRequest request) {
 
-
-            if (userRepository.findByEmail(request.getEmail()).isPresent()) {
-                throw new IllegalStateException("Email is already taken");
-            }
-
-            if (userRepository.findByLogin(request.getLogin()).isPresent()) {
-                throw new IllegalStateException("Login is already taken");
-            }
-
-            var user = User.builder()
-                    .login(request.getLogin())
-                    .email(request.getEmail())
-                    .password(passwordEncoder.encode(request.getPassword()))
-                    .role(Role.USER)
-                    .enabled(true)
-                    .verified(false)
-                    .build();
-
-            userRepository.save(user);
-
-            var jwtToken = jwtService.generateToken(user);
-            return AuthResponse.builder()
-                    .token(jwtToken)
-                    .message("now you registered")
-                    .build();
+        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
+            throw new IllegalStateException("Email is already taken");
         }
+
+        if (userRepository.findByLogin(request.getLogin()).isPresent()) {
+            throw new IllegalStateException("Login is already taken");
+        }
+
+        var user = User.builder()
+                .login(request.getLogin())
+                .email(request.getEmail())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .role(Role.USER)
+                .enabled(true)
+                .verified(false)
+                .build();
+
+        userRepository.save(user);
+
+        var jwtToken = jwtService.generateToken(user);
+        return AuthResponse.builder()
+                .token(jwtToken)
+                .message("now you registered")
+                .build();
+    }
 
     public AuthResponse login(AuthRequest request) {
         authenticationManager.authenticate(
@@ -68,22 +67,26 @@ public class AuthService {
                 .build();
     }
 
-    public boolean checkAvailability(String login, String email){
-
-        if (userRepository.findByEmail(email).isPresent()) {
-            throw new IllegalStateException("Email is already taken");
+    public boolean checkAvailability(CheckRequest request) {
+        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
+//
+//            throw new IllegalStateException("Email is already taken");
+            return false;
         }
 
-        if (userRepository.findByLogin(login).isPresent()) {
-            throw new IllegalStateException("Login is already taken");
+        if (userRepository.findByLogin(request.getLogin()).isPresent()) {
+//            throw new IllegalStateException("Login is already taken");
+            return false;
         }
+
         return true;
     }
+
 
 
 //    public boolean isUserEnabled(String username) {
 //        Optional<User> user = userRepository.findByLogin(username);
 //        return user.map(User::isEnabled).orElse(false);
-//    }
+//
 
 }

@@ -27,7 +27,6 @@ public class ProductServiceImp implements ProductService {
     private final ProductRepository productRepository;
 
 
-
     @Autowired
     public ProductServiceImp(ProductRepository productRepository) {
         this.productRepository = productRepository;
@@ -39,14 +38,11 @@ public class ProductServiceImp implements ProductService {
     public Product saveProduct(MultipartFile image, String productName, String shortDescription, String fullDescription, int price) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-
         User user = (User) authentication.getPrincipal();
         if(!user.getVerified()){
             System.out.println("User is not verified ");
             throw new VerificationException("User is not verified. To add a new product you have to verify your phone number before");
         }
-
-
 
         Product product = new Product();
         String fileName = StringUtils.cleanPath(image.getOriginalFilename());
@@ -67,11 +63,10 @@ public class ProductServiceImp implements ProductService {
         product.setPrice(price);
         product.setUser(user);
 
-
         return productRepository.save(product);
     }
 //    @Override
-//    public Product updateProduct(
+//    public ProductDto updateProduct(
 //            int product_id,
 //            MultipartFile image,
 //            String productName,
@@ -80,7 +75,7 @@ public class ProductServiceImp implements ProductService {
 //            Integer price
 //    ) {
 //
-//        Product existingProduct = productRepository.findById(product_id).orElse(null);
+//        ProductDto existingProduct = productRepository.findById(product_id).orElse(null);
 //
 //        if (existingProduct == null) {
 //
@@ -151,7 +146,7 @@ public class ProductServiceImp implements ProductService {
     }
 
 //    @Override
-//    public List<Product> findAllUserProducts(int userId) {
+//    public List<ProductDto> findAllUserProducts(int userId) {
 //        return productRepository.findAllByUserUserId(userId);
 //    }
 
@@ -163,7 +158,7 @@ public class ProductServiceImp implements ProductService {
         if (product.isPresent()){
             return product.get();
         }
-        throw new RuntimeException("Product is not find " + id);
+        throw new RuntimeException("ProductDto is not find " + id);
     }
 
 }
