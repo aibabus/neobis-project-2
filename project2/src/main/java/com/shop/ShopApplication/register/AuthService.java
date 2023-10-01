@@ -45,8 +45,12 @@ public class AuthService {
                     .enabled(true)
                     .verified(false)
                     .build();
+
             userRepository.save(user);
+
+            var jwtToken = jwtService.generateToken(user);
             return AuthResponse.builder()
+                    .token(jwtToken)
                     .message("now you registered")
                     .build();
         }
