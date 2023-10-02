@@ -1,4 +1,7 @@
 package com.shop.ShopApplication.controller;
+import com.shop.ShopApplication.dto.ProductFullDto;
+import com.shop.ShopApplication.dto.ProductListDto;
+import com.shop.ShopApplication.dto.UserFullDto;
 import com.shop.ShopApplication.repo.UserRepository;
 import com.shop.ShopApplication.service.UserService;
 import com.shop.ShopApplication.service.smsServices.smsSender.SmsService;
@@ -30,8 +33,9 @@ public class UserController {
     }
 
     @GetMapping("/findUser/{id}")
-    public User findUser(@PathVariable int id) {
-        return userService.getSingleUser(id);
+    public ResponseEntity<UserFullDto> findUser(@PathVariable int id) {
+        UserFullDto userDto = userService.getSingleUser(id);
+        return ResponseEntity.ok(userDto);
     }
 
     @DeleteMapping("/deleteUser/{id}")
@@ -65,30 +69,16 @@ public class UserController {
     }
 
     @GetMapping("/userProducts/{userId}")
-    public ResponseEntity<List<Product>> getUserProducts(@PathVariable int userId) {
-        User user = userService.getUserById(userId);
-
-        if (user != null) {
-            List<Product> userProducts = userService.findAllUserProducts(user);
-            System.out.println(userProducts);
-            return ResponseEntity.ok(userProducts);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<List<ProductListDto>> getUserProductListDtos(@PathVariable int userId) {
+        List<ProductListDto> userProductList = userService.getUserProductList(userId);
+        return ResponseEntity.ok(userProductList);
     }
 
 
     @GetMapping("/favorite-products/{userId}")
-    public ResponseEntity<Set<Product>> getFavoriteProducts(@PathVariable int userId) {
-        User user = userService.getUserById(userId);
-
-        if (user == null) {
-            return ResponseEntity.notFound().build();
-        }
-
-        Set<Product> favoriteProducts = user.getFavoriteProducts();
-
-        return ResponseEntity.ok(favoriteProducts);
+    public ResponseEntity<List<ProductListDto>> getFavoriteProductList(@PathVariable int userId) {
+        List<ProductListDto> favoriteProductList = userService.getFavoriteProductList(userId);
+        return ResponseEntity.ok(favoriteProductList);
     }
 
     @PutMapping("/{userId}/favorite-products/{productId}")
@@ -110,25 +100,7 @@ public class UserController {
             @PathVariable int userId,
             @RequestParam String newPhoneNumber
     ) {
-
-        Optional<User> optionalUser = userRepository.findById(userId);
-
-        if (optionalUser.isPresent()) {
-            User user = optionalUser.get();
-
-            if (userService.findByPhoneNumberAndVerified(newPhoneNumber)) {
-                return ResponseEntity.badRequest().body("Phone number is already in use by another verified user.");
-            }
-
-
-            user.setPhoneNumber(newPhoneNumber);
-            user.setVerified(false);
-            userRepository.save(user);
-
-            return ResponseEntity.ok("Phone number was updated.");
-        }
-
-        return ResponseEntity.notFound().build();
+        return userService.updatePhoneNumber(userId, newPhoneNumber);
     }
 
 

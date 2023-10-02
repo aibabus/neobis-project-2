@@ -1,5 +1,8 @@
 package com.shop.ShopApplication.service;
 
+import com.shop.ShopApplication.dto.ProductFullDto;
+import com.shop.ShopApplication.dto.ProductListDto;
+import com.shop.ShopApplication.dto.ProductSaveRequestDto;
 import com.shop.ShopApplication.exceptions.VerificationException;
 import com.shop.ShopApplication.repo.ProductRepository;
 import com.shop.ShopApplication.repo.UserRepository;
@@ -20,6 +23,7 @@ import java.io.IOException;
 import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductServiceImp implements ProductService {
@@ -35,36 +39,37 @@ public class ProductServiceImp implements ProductService {
 
     @Override
     @Transactional
-    public Product saveProduct(MultipartFile image, String productName, String shortDescription, String fullDescription, int price) {
+    public Product saveProduct(ProductSaveRequestDto requestDto) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
         User user = (User) authentication.getPrincipal();
-        if(!user.getVerified()){
+
+        if (!user.getVerified()) {
             System.out.println("User is not verified ");
-            throw new VerificationException("User is not verified. To add a new product you have to verify your phone number before");
+            throw new VerificationException("User is not verified. To add a new product, you have to verify your phone number before.");
         }
 
         Product product = new Product();
-        String fileName = StringUtils.cleanPath(image.getOriginalFilename());
+        String fileName = StringUtils.cleanPath(requestDto.getImage().getOriginalFilename());
 
         if (fileName.contains("..")) {
             System.out.println("Not a valid file");
         }
 
         try {
-            product.setImage(Base64.getEncoder().encodeToString(image.getBytes()));
+            product.setImage(Base64.getEncoder().encodeToString(requestDto.getImage().getBytes()));
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        product.setShortDescription(shortDescription);
-        product.setFullDescription(fullDescription);
-        product.setProductName(productName);
-        product.setPrice(price);
+        product.setShortDescription(requestDto.getShortDescription());
+        product.setFullDescription(requestDto.getFullDescription());
+        product.setProductName(requestDto.getProductName());
+        product.setPrice(requestDto.getPrice());
         product.setUser(user);
 
         return productRepository.save(product);
     }
+
 //    @Override
 //    public ProductDto updateProduct(
 //            int product_id,
@@ -141,8 +146,20 @@ public class ProductServiceImp implements ProductService {
         return productRepository.save(existingProduct);
     }
     @Override
-    public List<Product> findAllProducts() {
-        return productRepository.findAll();
+    public List<ProductListDto> findAllProducts() {
+        List<Product> products = productRepository.findAll();
+
+        List<ProductListDto> productListDtos = products.stream()
+                .map(product -> new ProductListDto(
+                        product.getProduct_id(),
+                        product.getImage(),
+                        product.getProductName(),
+                        product.getPrice(),
+                        product.getNumberOfLikes() // Assuming you have a getter for the like count
+                ))
+                .collect(Collectors.toList());
+
+        return productListDtos;
     }
 
 //    @Override
@@ -153,11 +170,21 @@ public class ProductServiceImp implements ProductService {
 
 
     @Override
-    public Product findSingleProduct(int id) {
-        Optional<Product> product = productRepository.findById(id);
-        if (product.isPresent()){
-            return product.get();
-        }
+    public ProductFullDto findSingleProduct(int id) {
+        Optional<Product> productOptional = productRepository.findById(id);
+        if (productOptional.isPresent()){
+                Product product = productOptional.get();
+                return new ProductFullDto(
+                        product.getProduct_id(),
+                        product.getImage(),
+                        product.getProductName(),
+                        product.getPrice(),
+                        product.getShortDescription(),
+                        product.getFullDescription(),
+                        product.getNumberOfLikes()
+                );
+            }
+
         throw new RuntimeException("ProductDto is not find " + id);
     }
 

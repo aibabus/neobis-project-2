@@ -1,5 +1,8 @@
 package com.shop.ShopApplication.controller;
 
+import com.shop.ShopApplication.dto.ProductFullDto;
+import com.shop.ShopApplication.dto.ProductListDto;
+import com.shop.ShopApplication.dto.ProductSaveRequestDto;
 import com.shop.ShopApplication.repo.ProductRepository;
 import com.shop.ShopApplication.service.ProductService;
 import com.shop.ShopApplication.user.Product;
@@ -22,9 +25,9 @@ public class ProductController {
 
     @PostMapping("/saveProduct")
     @Transactional
-    public ResponseEntity<String> saveProduct(@RequestBody MultipartFile image, String productName, String shortDescription, String fullDescription, int price){
-        productService.saveProduct(image,productName,shortDescription,fullDescription,price);
-        return ResponseEntity.ok("ProductDto saved successfully.");
+    public ResponseEntity<String> saveProduct(@RequestBody ProductSaveRequestDto requestDto) {
+        productService.saveProduct(requestDto);
+        return ResponseEntity.ok("Product saved successfully.");
     }
 
     @PutMapping("/updateProduct/{productId}")
@@ -54,13 +57,12 @@ public class ProductController {
         productRepository.deleteById(id);
     }
     @GetMapping("/findAllProducts")
-    public List<Product> allProducts(){
+    public List<ProductListDto> allProducts(){
         return productService.findAllProducts();
     }
 
     @GetMapping("/findSingleProduct")
-    public Product findSingleUser(@PathVariable int id){
+    public ProductFullDto findSingleProduct(@PathVariable int id){
         return productService.findSingleProduct(id);
     }
-
 }

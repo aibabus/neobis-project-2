@@ -23,6 +23,7 @@ public class Product {
     private int price;
     private String shortDescription;
     private String fullDescription;
+    private int numberOfLikes;
 
     @Lob
     @Column(columnDefinition = "MEDIUMBLOB")
@@ -39,4 +40,12 @@ public class Product {
     private Set<User> favoriteByUsers = new HashSet<>();
 
 
+    public void incrementLikeCount() {
+        numberOfLikes++;
+    }
+    public void decrementLikeCount() {
+        if (numberOfLikes > 0) {
+            numberOfLikes--;
+        }
+    }
 }

@@ -1,4 +1,6 @@
 package com.shop.ShopApplication.service;
+import com.shop.ShopApplication.dto.ProductListDto;
+import com.shop.ShopApplication.dto.UserFullDto;
 import com.shop.ShopApplication.repo.ProductRepository;
 import com.shop.ShopApplication.repo.UserRepository;
 import com.shop.ShopApplication.repo.VerificationCodeRepository;
@@ -8,15 +10,20 @@ import com.shop.ShopApplication.user.VerificationCode;
 import io.jsonwebtoken.io.IOException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.persistence.EntityNotFoundException;
+import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImp implements UserService{
@@ -41,10 +48,20 @@ public class UserServiceImp implements UserService{
     }
 
     @Override
-    public User getSingleUser(int id) {
+    public UserFullDto getSingleUser(int id) {
         Optional<User> user = userRepository.findById(id);
         if (user.isPresent()){
-            return user.get();
+            User userEntity = user.get();
+            return new UserFullDto(
+                    userEntity.getUser_id(),
+                    userEntity.getFirstName(),
+                    userEntity.getLastName(),
+                    userEntity.getLogin(),
+                    userEntity.getEmail(),
+                    userEntity.getAvatar(),
+                    userEntity.getPhoneNumber(),
+                    userEntity.getBirthDate()
+            );
         }
         throw new RuntimeException("User is not find " + id);
     }
@@ -56,19 +73,27 @@ public class UserServiceImp implements UserService{
     }
 
     @Override
-    public boolean updatePhoneNumber(int userId, String newPhoneNumber) {
+    @Transactional
+    public ResponseEntity<String> updatePhoneNumber(int userId, String newPhoneNumber) {
         Optional<User> optionalUser = userRepository.findById(userId);
 
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
+
+            if (findByPhoneNumberAndVerified(newPhoneNumber)) {
+                return ResponseEntity.badRequest().body("Phone number is already in use by another verified user.");
+            }
+
             user.setPhoneNumber(newPhoneNumber);
             user.setVerified(false);
             userRepository.save(user);
-            return true;
+
+            return ResponseEntity.ok("Phone number was updated.");
         }
 
-        return false;
+        return ResponseEntity.notFound().build();
     }
+
 
 
     @Override
@@ -94,6 +119,49 @@ public class UserServiceImp implements UserService{
     }
 
     @Override
+    public List<ProductListDto> getUserProductList(int userId) {
+        User user = getUserById(userId);
+
+        if (user != null) {
+            List<Product> userProducts = findAllUserProducts(user);
+
+            // Map Product entities to ProductListDto
+            return userProducts.stream()
+                    .map(product -> new ProductListDto(
+                            product.getProduct_id(),
+                            product.getImage(),
+                            product.getProductName(),
+                            product.getPrice(),
+                            product.getNumberOfLikes()
+                    ))
+                    .collect(Collectors.toList());
+        } else {
+            throw new EntityNotFoundException("User not found with id: " + userId);
+        }
+    }
+
+    @Override
+    public List<ProductListDto> getFavoriteProductList(int userId) {
+        User user = getUserById(userId);
+
+        if (user != null) {
+            Set<Product> favoriteProducts = user.getFavoriteProducts();
+
+            return favoriteProducts.stream()
+                    .map(product -> new ProductListDto(
+                            product.getProduct_id(),
+                            product.getImage(),
+                            product.getProductName(),
+                            product.getPrice(),
+                            product.getNumberOfLikes()
+                    ))
+                    .collect(Collectors.toList());
+        } else {
+            throw new EntityNotFoundException("User not found with id: " + userId);
+        }
+    }
+
+    @Override
     public User addOrRemoveFavoriteProduct(int userId, int productId) {
         User user = userRepository.findById(userId).orElse(null);
 
@@ -109,8 +177,11 @@ public class UserServiceImp implements UserService{
 
         if (user.getFavoriteProducts().contains(product)) {
             user.getFavoriteProducts().remove(product);
+            product.decrementLikeCount();
+
         } else {
             user.getFavoriteProducts().add(product);
+            product.incrementLikeCount();
         }
         return userRepository.save(user);
     }
