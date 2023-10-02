@@ -39,12 +39,27 @@ public class JwtService {
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 10))
                 .signWith(getSignIngKey(), SignatureAlgorithm.HS256)
+
                 .compact();
     }
 
     public boolean isTokenValid(String token, UserDetails userDetails){
+//        final String username = extractUsername(token);
+//        return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
+        final Claims claims = extractAllClaims(token);
         final String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
+
+        // Extract the expiration time from the token
+        Date expiration = claims.getExpiration();
+
+        // Set the allowed clock skew (in milliseconds)
+        long allowedClockSkewMillis = 300000; // 5 minutes
+
+        // Calculate the current time with allowed clock skew
+        Date currentTimeWithSkew = new Date(System.currentTimeMillis() + allowedClockSkewMillis);
+
+        // Check if the token is expired, considering allowed clock skew
+        return (username.equals(userDetails.getUsername())) && (expiration.after(currentTimeWithSkew));
     }
 
     private boolean isTokenExpired(String token) {

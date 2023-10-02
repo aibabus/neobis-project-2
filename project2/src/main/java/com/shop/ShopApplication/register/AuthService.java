@@ -69,14 +69,12 @@ public class AuthService {
 
     public boolean checkAvailability(CheckRequest request) {
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
-//
-//            throw new IllegalStateException("Email is already taken");
-            return false;
+
+            throw new IllegalStateException("Email is already taken");
         }
 
         if (userRepository.findByLogin(request.getLogin()).isPresent()) {
-//            throw new IllegalStateException("Login is already taken");
-            return false;
+            throw new IllegalStateException("Login is already taken");
         }
 
         return true;
@@ -87,6 +85,6 @@ public class AuthService {
 //    public boolean isUserEnabled(String username) {
 //        Optional<User> user = userRepository.findByLogin(username);
 //        return user.map(User::isEnabled).orElse(false);
-//
+//}
 
 }
