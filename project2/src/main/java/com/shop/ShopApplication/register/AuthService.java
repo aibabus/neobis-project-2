@@ -36,6 +36,7 @@ public class AuthService {
             throw new IllegalStateException("Login is already taken");
         }
 
+
         var user = User.builder()
                 .login(request.getLogin())
                 .email(request.getEmail())
@@ -44,12 +45,13 @@ public class AuthService {
                 .enabled(true)
                 .verified(false)
                 .build();
+        if (user == null){
+            throw new IllegalStateException("bad credentials");
+        }
 
         userRepository.save(user);
 
-        var jwtToken = jwtService.generateToken(user);
         return AuthResponse.builder()
-                .token(jwtToken)
                 .message("now you registered")
                 .build();
     }
