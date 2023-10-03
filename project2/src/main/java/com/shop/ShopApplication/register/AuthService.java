@@ -29,11 +29,15 @@ public class AuthService {
     public AuthResponse register(RegisterRequest request) {
 
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
-            throw new IllegalStateException("Email is already taken");
+            return AuthResponse.builder()
+                    .message("Email is already registered")
+                    .build();
         }
 
         if (userRepository.findByLogin(request.getLogin()).isPresent()) {
-            throw new IllegalStateException("Login is already taken");
+            return AuthResponse.builder()
+                    .message("Login is already registered")
+                    .build();
         }
 
 
