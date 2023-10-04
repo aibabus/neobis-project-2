@@ -74,13 +74,14 @@ public class AuthService {
     }
 
     public boolean checkAvailability(CheckRequest request) {
+
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
 
-            throw new IllegalStateException("Email is already taken");
+            return false;
         }
 
         if (userRepository.findByLogin(request.getLogin()).isPresent()) {
-            throw new IllegalStateException("Login is already taken");
+            return false;
         }
 
         return true;
