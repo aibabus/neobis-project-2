@@ -73,18 +73,27 @@ public class AuthService {
                 .build();
     }
 
-    public boolean checkAvailability(CheckRequest request) {
+    public CheckResponse checkAvailability(CheckRequest request) {
 
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
 
-            return false;
+            return CheckResponse.builder()
+                    .message("Email is already taken")
+                    .userPresent(false)
+                    .build();
         }
 
         if (userRepository.findByLogin(request.getLogin()).isPresent()) {
-            return false;
+            return CheckResponse.builder()
+                    .message("Email is already taken")
+                    .userPresent(false)
+                    .build();
         }
 
-        return true;
+        return CheckResponse.builder()
+                .message("Email and Login is new !")
+                .userPresent(true)
+                .build();
     }
 
 
