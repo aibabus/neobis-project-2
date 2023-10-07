@@ -67,6 +67,25 @@ public class UserServiceImp implements UserService{
     }
 
     @Override
+    public UserFullDto getSingleUserByLogin(String login) {
+        Optional<User> user = userRepository.findByLogin(login);
+        if (user.isPresent()){
+            User userEntity = user.get();
+            return new UserFullDto(
+                    userEntity.getUser_id(),
+                    userEntity.getFirstName(),
+                    userEntity.getLastName(),
+                    userEntity.getLogin(),
+                    userEntity.getEmail(),
+                    userEntity.getAvatar(),
+                    userEntity.getPhoneNumber(),
+                    userEntity.getBirthDate()
+            );
+        }
+        throw new RuntimeException("User is not find " + login);
+    }
+
+    @Override
     public void deleteUser(int id) {
 
         userRepository.deleteById(id);

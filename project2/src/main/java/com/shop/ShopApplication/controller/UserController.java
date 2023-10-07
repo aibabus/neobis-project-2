@@ -33,8 +33,8 @@ public class UserController {
     }
 
     @GetMapping("/findUser/{id}")
-    public ResponseEntity<UserFullDto> findUser(@PathVariable int id) {
-        UserFullDto userDto = userService.getSingleUser(id);
+    public ResponseEntity<UserFullDto> findUser(@PathVariable String login) {
+        UserFullDto userDto = userService.getSingleUserByLogin(login);
         return ResponseEntity.ok(userDto);
     }
 
