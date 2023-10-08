@@ -32,7 +32,7 @@ public class UserController {
         return userService.getUser();
     }
 
-    @GetMapping("/findUser/{id}")
+    @GetMapping("/findUser/{login}")
     public ResponseEntity<UserFullDto> findUser(@PathVariable String login) {
         UserFullDto userDto = userService.getSingleUserByLogin(login);
         return ResponseEntity.ok(userDto);
@@ -45,7 +45,7 @@ public class UserController {
 
 
 
-    @PutMapping("/updateUser/{userId}")
+    @PutMapping("/updateUser/{login}")
     public ResponseEntity<User> updateUser(
             @PathVariable String login,
             @RequestBody User updatedUser
