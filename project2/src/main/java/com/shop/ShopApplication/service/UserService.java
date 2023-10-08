@@ -20,7 +20,7 @@ public interface UserService {
     public UserFullDto getSingleUserByLogin(String login);
     void deleteUser (int id);
     public ResponseEntity<String> updatePhoneNumber(int userId, String newPhoneNumber);
-    public User updateUser(int userId, User updatedUser);
+    public User updateUser(String login, User updatedUser);
     public User getUserById(int userId);
     public boolean verifyPhoneNumber(String phoneNumber, String code);
     public User addOrRemoveFavoriteProduct(int userId, int productId);
@@ -28,6 +28,7 @@ public interface UserService {
     public boolean doesUserExistByLogin(String login);
     public List<ProductListDto> getUserProductList(int userId);
     public List<ProductListDto> getFavoriteProductList(int userId);
+    public User findByLogin(String login);
 
     List<Product> findAllUserProducts(User user);
 

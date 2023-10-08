@@ -116,11 +116,10 @@ public class UserServiceImp implements UserService{
 
 
     @Override
-    public User updateUser(int userId, User updatedUser) {
+    public User updateUser(String login, User updatedUser) {
         System.out.println("Entering updateUser method");
 
-        User existingUser = userRepository.findById(userId).orElse(null);
-
+        User existingUser = userRepository.findByLogin(login).orElse(null);
 
         if (existingUser == null) {
             return null;
@@ -128,7 +127,6 @@ public class UserServiceImp implements UserService{
         }
 
         BeanUtils.copyProperties(updatedUser, existingUser, "user_id", "email","role","login","password","verified","enabled","phone_number");
-
         return userRepository.save(existingUser);
     }
 
@@ -178,6 +176,16 @@ public class UserServiceImp implements UserService{
         } else {
             throw new EntityNotFoundException("User not found with id: " + userId);
         }
+    }
+
+    @Override
+    public User findByLogin(String login) {
+        Optional<User> optionalUser = userRepository.findByLogin(login);
+        if (optionalUser.isPresent()) {
+             User user = optionalUser.get();
+             return user;
+        }
+        return null;
     }
 
     @Override

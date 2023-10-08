@@ -47,18 +47,18 @@ public class UserController {
 
     @PutMapping("/updateUser/{userId}")
     public ResponseEntity<User> updateUser(
-            @PathVariable int userId,
+            @PathVariable String login,
             @RequestBody User updatedUser
     ) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User authenticatedUser = userService.getUserById(userId);
+        User authenticatedUser = userService.findByLogin(login);
 
         if (authenticatedUser == null) {
             System.out.println("user not found");
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
 
-        User updatedUserData = userService.updateUser(userId, updatedUser);
+        User updatedUserData = userService.updateUser(login, updatedUser);
 
         if (updatedUserData == null) {
             System.out.println("There is no data");
